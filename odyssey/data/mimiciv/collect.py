@@ -1,13 +1,8 @@
 """Collect data from the FHIR database and save to csv files."""
 
-import sys
-import os
-
-# Add the path to the odyssey module
-sys.path.append('/Users/maxbrazhnyy/GitHub/odyssey')
-
 import json
 import logging
+import os
 from ast import literal_eval
 from typing import Any, Dict, List, Optional
 
@@ -143,7 +138,7 @@ class FHIRDataCollector:
         self.engine = create_engine(db_path)
         self.metadata = MetaData()
         self.schema = schema
-        self.save_dir = os.path.expanduser('~/data/mimiciv')
+        self.save_dir = save_dir
         self.buffer_size = buffer_size
 
         self.vocab_dir = os.path.join(self.save_dir, "vocab")
