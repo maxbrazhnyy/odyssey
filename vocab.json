@@ -34,6 +34,7 @@
     "TROPL": 32,
     "TROPT": 33,
     "URINE": 34,
-    "WBC": 35
+    "WBC": 35,
+    "WEIGHT": 36
 
 }
