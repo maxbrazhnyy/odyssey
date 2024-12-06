@@ -23,6 +23,7 @@ from odyssey.models.model_utils import (
     get_run_id,
     load_config,
     load_pretrain_data,
+    load_pretrain_data2,
 )
 from odyssey.utils.utils import seed_everything
 
@@ -34,19 +35,31 @@ def main(args: argparse.Namespace, model_config: Dict[str, Any]) -> None:
     torch.cuda.empty_cache()
     torch.set_float32_matmul_precision("medium")
 
-    pre_data = load_pretrain_data(
+    # TODO: DONE Adapt this for out data
+    # pre_data = load_pretrain_data(
+    #     args.data_dir,
+    #     args.sequence_file,
+    #     args.id_file,
+    # )
+
+    pre_train = load_pretrain_data2(
         args.data_dir,
         args.sequence_file,
-        args.id_file,
+    )
+    pre_val = load_pretrain_data2(
+        args.data_dir,
+        args.sequence_file,
     )
 
+    # TODO : Not use this function and import the train and val data separately above
     # Split data
-    pre_train, pre_val = train_test_split(
-        pre_data,
-        test_size=args.val_size,
-        random_state=args.seed,
-    )
-
+    # pre_train, pre_val = train_test_split(
+    #     pre_data,
+    #     test_size=args.val_size,
+    #     random_state=args.seed,
+    # )
+    
+    # TODO : Adapt to use our own tokenizer
     # Initialize Tokenizer
     if args.tokenizer_type == "fhir":
         tokenizer = ConceptTokenizer(
@@ -57,6 +70,14 @@ def main(args: argparse.Namespace, model_config: Dict[str, Any]) -> None:
             + [f"[M_{i}]" for i in range(0, 13)]
             + ["[LT]"],
         )
+    elif args.tokenizer_type == "physio_npy":
+        tokenizer = ConceptTokenizer(
+            data_dir=args.vocab_dir,
+            start_token="[CLS]", # to be defined
+            end_token="[SEP]", # to be defined
+            time_tokens=[f"[T_{i}]" for i in range(0, 48)],
+        )
+
     else:  # meds
         tokenizer = ConceptTokenizer(
             data_dir=args.vocab_dir,
@@ -67,7 +88,9 @@ def main(args: argparse.Namespace, model_config: Dict[str, Any]) -> None:
         )
     tokenizer.fit_on_vocab()
 
-    # Load datasets
+    # TODO : Adapt to use our own dataset creator with tokenization for our data
+    # Create an elif here for our own PretrainDataset -like class
+    # Load datasets suitable for the model
     if args.is_decoder:  # e.g. Mamba and Mamba2
         train_dataset = PretrainDatasetDecoder(
             data=pre_train,
@@ -99,6 +122,8 @@ def main(args: argparse.Namespace, model_config: Dict[str, Any]) -> None:
             mask_prob=args.mask_prob,
             padding_side=args.padding_side,
         )
+
+    # From here on we should be ok to run as it is
 
     train_loader = DataLoader(
         train_dataset,

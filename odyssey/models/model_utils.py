@@ -10,6 +10,7 @@ import pandas as pd
 import polars as pl
 import torch
 import yaml
+import numpy as np
 
 from odyssey.data.tokenizer import ConceptTokenizer
 from odyssey.models.cehr_bert.model import BertFinetune, BertPretrain
@@ -76,6 +77,36 @@ def load_pretrain_data(
 
     return data.loc[data["patient_id"].isin(patient_ids["pretrain"])]
 
+def load_pretrain_data2(
+    data_dir: str,
+    sequence_file: str,
+) -> pd.DataFrame:
+    """Load the pretraining data.
+
+    Parameters
+    ----------
+    data_dir: str
+        Directory containing the data files
+    sequence_file: str
+        Sequence file name
+
+
+    Returns
+    -------
+    pd.DataFrame
+        Pretraining data
+
+    """
+    sequence_path = join(data_dir, sequence_file)
+
+    if not os.path.exists(sequence_path):
+        raise FileNotFoundError(f"Sequence file not found: {sequence_path}")
+
+
+    # Loading data from npy file
+    data = pd.DataFrame(np.load(sequence_path, allow_pickle=True))
+
+    return data
 
 def load_finetune_data(
     data_dir: str,
