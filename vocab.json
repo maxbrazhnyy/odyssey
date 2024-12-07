@@ -1,6 +1,6 @@
 {
     "CLS": 0,
-    "VISIT START": 1,
+    "VS": 1,
     "ALBUMIN": 2,
     "ALP": 3,
     "ALT": 4,
@@ -38,7 +38,7 @@
     "URINE": 36,
     "WBC": 37,
     "WEIGHT": 38,
-    "VISIT END": 39,
+    "VE": 39,
     "PAD": 40,
     "REG": 41
 }
